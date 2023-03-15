@@ -3,8 +3,6 @@ name: Build and deploy
 on:
   push:
     branches: [ source ]
-  pull_request:
-    branches: [ source ]
   workflow_dispatch: {}
 
 jobs:
