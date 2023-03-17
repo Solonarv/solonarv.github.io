@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Multiclass Spell Slot Calculator</title>
+        <link rel="stylesheet" href="css/default.css" />
+        <meta charset="utf-8">
+
+        <style type="text/css">
+            td, tr {
+                text-align: center;
+            }
+
+            #level-inputs input {
+                width: 5em;
+            }
+
+            #level-inputs td {
+                padding: 0.5em;
+            }
+
+            .warning-levelTooLow {
+                background-color: #fc2;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Multiclass Spell Slots Calculator</h1>
+        <p>This calculator will tell you how many spell slots you have of each level, 
+            according to the multiclassing rules in Chapter 5 of the PHB.</p>
+        <h3>Class Levels</h3>
+        <p>To use the calculator,
+            simply enter your level in each spellcasting class into the table below.</p>
+        <table id="level-inputs">
+            <tbody>
+                <tr>
+                    <th>Artificer</th>
+                    <th>Bard</th>
+                    <th>Cleric</th>
+                    <th>Druid</th>
+                    <th>Fighter (EK)</th>
+                    <th>Paladin</th>
+                    <th>Ranger</th>
+                    <th>Rogue (AT)</th>
+                    <th>Sorcerer</th>
+                    <th>Wizard</th>
+                </tr>
+                <tr>
+                    <td><input class="level-input half-up" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input full" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input full" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input full" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input third" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input half" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input half" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input third" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input full" type="number" value="0" min="0" max="20"></td>
+                    <td><input class="level-input full" type="number" value="0" min="0" max="20"></td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Spell Slots</h3>
+        <p>With the above level spread, these are your spell slots of each level:</p>
+        <table id="spell-slots">
+            <tbody>
+                <tr>
+                    <th>1st</th>
+                    <th>2nd</th>
+                    <th>3rd</th>
+                    <th>4th</th>
+                    <th>5th</th>
+                    <th>6th</th>
+                    <th>7th</th>
+                    <th>8th</th>
+                    <th>9th</th>
+                </tr>
+                <tr>
+                    <td><span id="sl-1">—</span></td>
+                    <td><span id="sl-2">—</span></td>
+                    <td><span id="sl-3">—</span></td>
+                    <td><span id="sl-4">—</span></td>
+                    <td><span id="sl-5">—</span></td>
+                    <td><span id="sl-6">—</span></td>
+                    <td><span id="sl-7">—</span></td>
+                    <td><span id="sl-8">—</span></td>
+                    <td><span id="sl-9">—</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <p id="warning-notMulticlassed" hidden>
+            <strong>Warning:</strong> you're not actually using the multiclass rules, you just have the spell slots of a normal single-classed character.
+        </p>
+        <p id="warning-levelTooLow" hidden>
+            <strong>Warning:</strong> your level in one or more <span class=warning-levelTooLow>classes</span> is too low; you don't have Spellcasting from those classes yet.
+        </p>
+        <footer>
+            <p>This calculator is unofficial Fan Content permitted under the Fan Content Policy.
+                Not approved/endorsed by Wizards. Portions of the materials used are property of
+                Wizards of the Coast. ©Wizards of the Coast LLC.</p>
+        </footer>
+        <script type="text/javascript">
+            // <!--
+                const slotsByLevel = {
+                    0:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    1:  [0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+                    2:  [0, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+                    3:  [0, 4, 2, 0, 0, 0, 0, 0, 0, 0],
+                    4:  [0, 4, 3, 0, 0, 0, 0, 0, 0, 0],
+                    5:  [0, 4, 3, 2, 0, 0, 0, 0, 0, 0],
+                    6:  [0, 4, 3, 3, 0, 0, 0, 0, 0, 0],
+                    7:  [0, 4, 3, 3, 1, 0, 0, 0, 0, 0],
+                    8:  [0, 4, 3, 3, 2, 0, 0, 0, 0, 0],
+                    9:  [0, 4, 3, 3, 3, 1, 0, 0, 0, 0],
+                    10: [0, 4, 3, 3, 3, 2, 0, 0, 0, 0],
+                    11: [0, 4, 3, 3, 3, 2, 1, 0, 0, 0],
+                    12: [0, 4, 3, 3, 3, 2, 1, 0, 0, 0],
+                    13: [0, 4, 3, 3, 3, 2, 1, 1, 0, 0],
+                    14: [0, 4, 3, 3, 3, 2, 1, 1, 0, 0],
+                    15: [0, 4, 3, 3, 3, 2, 1, 1, 1, 0],
+                    16: [0, 4, 3, 3, 3, 2, 1, 1, 1, 0],
+                    17: [0, 4, 3, 3, 3, 2, 1, 1, 1, 1],
+                    18: [0, 4, 3, 3, 3, 3, 1, 1, 1, 1],
+                    19: [0, 4, 3, 3, 3, 3, 2, 1, 1, 1],
+                    20: [0, 4, 3, 3, 3, 3, 2, 2, 1, 1],
+                };
+                
+                const inputs = document.getElementsByClassName("level-input")
+
+                const recalculate = () => {
+                    let totalCasterLevel = 0;
+                    let monoclassLevel = 0;
+                    let nCastingClasses = 0;
+                    let warnLevelTooLow = false;
+                    for (let inp of inputs) {
+                        let val = parseInt(inp.value) || 0;
+                        let min = parseInt(inp.min);
+                        let max = parseInt(inp.max);
+
+                        if (val < min) inp.value = val = min;
+                        if (val > max) inp.value = val = max;
+
+                        let classList = inp.classList;
+
+                        if (classList.contains("full")) {
+                            totalCasterLevel += val;
+                            monoclassLevel += val;
+                            if (val != 0) nCastingClasses += 1;
+                        } else if (inp.classList.contains("half")) {
+                            if (val != 0 && val < 2) {
+                                inp.parentElement.classList.add("warning-levelTooLow");
+                                warnLevelTooLow = true;
+                            }
+                            else {
+                                inp.parentElement.classList.remove("warning-levelTooLow");
+                                totalCasterLevel += Math.floor(val / 2);
+                                monoclassLevel += Math.ceil(val / 2);
+                                if (val != 0) nCastingClasses += 1;
+                            }
+                        } else if (classList.contains("third")) {
+                            if (val != 0 && val < 3) {
+                                inp.parentElement.classList.add("warning-levelTooLow");
+                                warnLevelTooLow = true;
+                            }
+                            else {
+                                inp.parentElement.classList.remove("warning-levelTooLow");
+                                totalCasterLevel += Math.floor(val / 3);
+                                monoclassLevel += Math.ceil(val / 3);
+                                if (val != 0) nCastingClasses += 1;
+                            }
+                        } else if (classList.contains("half-up")) {
+                            totalCasterLevel += Math.ceil(val / 2);
+                            monoclassLevel += Math.ceil(val / 3);
+                            if (val != 0) nCastingClasses += 1;
+                        }
+                    }
+                    
+                    let multiclassed = nCastingClasses > 1;
+                    if (!multiclassed) totalCasterLevel = monoclassLevel;
+
+                    let slots = slotsByLevel[totalCasterLevel];
+                    for (let sl = 1; sl <= 9; sl++) {
+                        let id = "sl-"+sl;
+                        let el = document.getElementById(id);
+                        let nSlots = slots[sl];
+                        
+                        el.innerText = nSlots > 0 ? nSlots : "—";
+                    }
+
+                    document.getElementById("warning-notMulticlassed").hidden = nCastingClasses==0 || multiclassed;
+                    document.getElementById("warning-levelTooLow").hidden = !warnLevelTooLow;
+                }
+
+                for (let inp of inputs) {
+                    inp.addEventListener('input', recalculate)
+                }
+
+                recalculate();
+            // -->
+        </script>
+    </body>
+</html>
